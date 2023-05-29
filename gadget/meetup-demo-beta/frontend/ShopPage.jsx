@@ -36,6 +36,7 @@ const ShopPage = () => {
     id: product.id,
     title: product.title,
     price: product.variants.edges[0].node.price,
+    updatedAt: new Date(product.updatedAt).toLocaleString(),
   }));
 
   const resourceName = {
@@ -43,16 +44,19 @@ const ShopPage = () => {
     plural: "products",
   };
 
-  const rowMarkup = productData?.map(({ id, title, price }, index) => (
-    <IndexTable.Row id={id} key={id} position={index}>
-      <IndexTable.Cell>
-        <Text variant="bodyMd" fontWeight="bold" as="span">
-          {title}
-        </Text>
-      </IndexTable.Cell>
-      <IndexTable.Cell>£{price}</IndexTable.Cell>
-    </IndexTable.Row>
-  ));
+  const rowMarkup = productData?.map(
+    ({ id, title, price, updatedAt }, index) => (
+      <IndexTable.Row id={id} key={id} position={index}>
+        <IndexTable.Cell>
+          <Text variant="bodyMd" fontWeight="bold" as="span">
+            {title}
+          </Text>
+        </IndexTable.Cell>
+        <IndexTable.Cell>£{price}</IndexTable.Cell>
+        <IndexTable.Cell>{updatedAt}</IndexTable.Cell>
+      </IndexTable.Row>
+    )
+  );
 
   if (error) {
     return (
@@ -84,16 +88,20 @@ const ShopPage = () => {
     <Page title="App">
       <Layout>
         <Layout.Section>
-          <code>{JSON.stringify(productData[0], null, 2)}</code>
-          {/* <LegacyCard>
+          {/* <code>{JSON.stringify(productData[0], null, 2)}</code> */}
+          <LegacyCard>
             <IndexTable
               resourceName={resourceName}
               itemCount={productData.length}
-              headings={[{ title: "Title" }, { title: "Price" }]}
+              headings={[
+                { title: "Title" },
+                { title: "Price" },
+                { title: "Updated At" },
+              ]}
             >
               {rowMarkup}
             </IndexTable>
-          </LegacyCard> */}
+          </LegacyCard>
         </Layout.Section>
         <Layout.Section>
           <FooterHelp>
