@@ -84,8 +84,8 @@ const ShopPage = () => {
     <Page title="App">
       <Layout>
         <Layout.Section>
-          {/* <code>{JSON.stringify(productData[0], null, 2)}</code> */}
-          <LegacyCard>
+          <code>{JSON.stringify(productData[0], null, 2)}</code>
+          {/* <LegacyCard>
             <IndexTable
               resourceName={resourceName}
               itemCount={productData.length}
@@ -93,7 +93,7 @@ const ShopPage = () => {
             >
               {rowMarkup}
             </IndexTable>
-          </LegacyCard>
+          </LegacyCard> */}
         </Layout.Section>
         <Layout.Section>
           <FooterHelp>
