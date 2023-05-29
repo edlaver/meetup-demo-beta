@@ -36,5 +36,58 @@ module.exports = async ({ api, record, params, logger, connections }) => {
       { variantID, current, previous },
       "Price changed for variant..."
     );
+
+    // Add to Price History table:
+    await api.priceHistory.create({
+      priceHistory: {
+        price: current,
+        variant: {
+          _link: variantID,
+        },
+      },
+    });
+
+    // Get the lowest price in last 30 days:
+    const thirtyDaysAgo = subtractDays(new Date(), 30);
+
+    const lowestPriceInfo = await api.priceHistory.findFirst({
+      filter: {
+        AND: [
+          {
+            variant: {
+              equals: variantID,
+            },
+          },
+          {
+            createdAt: {
+              greaterThanOrEqual: thirtyDaysAgo,
+            },
+          },
+        ],
+      },
+      sort: {
+        price: "Ascending",
+      },
+    });
+
+    logger.info({ lowestPriceInfo }, "Lowest price in last 30 days");
+
+    // Update the record with the lowest price details:
+    const lowestPrice = lowestPriceInfo.price || current;
+    const lowestPriceUpdatedAt = lowestPriceInfo.updatedAt || new Date();
+
+    // https://docs.gadget.dev/api/meetup-demo-beta/internal-api
+    await api.internal.shopifyProductVariant.update(variantID, {
+      shopifyProductVariant: {
+        lowestPrice,
+        lowestPriceUpdatedAt,
+      },
+    });
   }
 };
+
+function subtractDays(date, days) {
+  const dateCopy = new Date(date);
+  dateCopy.setDate(dateCopy.getDate() - days);
+  return dateCopy;
+}
