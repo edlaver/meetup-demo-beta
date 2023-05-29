@@ -1,0 +1,29 @@
+{
+  "name": "meetup-demo-beta",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Internal package for Gadget app Meetup Demo Beta (Development environment)",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "typescript": "^4.5.3",
+    "@gadget-client/meetup-demo-beta": "link:.gadget/client",
+    "gadget-server": "link:.gadget/server",
+    "vite": "^4.2.1",
+    "@vitejs/plugin-react-swc": "3.2.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "@gadgetinc/react": "^0.12.1",
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
+    "shopify-api-node": "3.11.3",
+    "react-router-dom": "^6.6.1",
+    "@shopify/polaris": "10.45.0",
+    "@shopify/polaris-icons": "6.10.0",
+    "@shopify/app-bridge": "3.5.0",
+    "@shopify/app-bridge-react": "3.5.0",
+    "@gadgetinc/react-shopify-app-bridge": "^0.10.2"
+  },
+  "scripts": {
+    "vite:build": "NODE_ENV=production vite build"
+  }
+}
