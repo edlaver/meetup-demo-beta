@@ -1,34 +1,58 @@
-import { useFindFirst, useQuery } from "@gadgetinc/react";
+import { useFindMany, useQuery } from "@gadgetinc/react";
 import {
-  AlphaCard,
   Banner,
   FooterHelp,
-  HorizontalStack,
-  Icon,
   Layout,
+  LegacyCard,
   Link,
   Page,
+  IndexTable,
   Spinner,
   Text,
-  VerticalStack,
+  LegacyStack,
+  Badge,
 } from "@shopify/polaris";
-import { StoreMajor } from "@shopify/polaris-icons";
 import { api } from "./api";
 
-const gadgetMetaQuery = `
-  query {
-    gadgetMeta {
-      slug
-      editURL
-    }
-  }
-`;
-
 const ShopPage = () => {
-  const [{ data, fetching, error }] = useFindFirst(api.shopifyShop);
-  const [{ data: metaData, fetching: fetchingGadgetMeta }] = useQuery({
-    query: gadgetMetaQuery,
+  const [{ data, error, fetching }, refresh] = useFindMany(api.shopifyProduct, {
+    select: {
+      id: true,
+      title: true,
+      createdAt: true,
+      updatedAt: true,
+      variants: {
+        edges: {
+          node: {
+            id: true,
+            price: true,
+          },
+        },
+      },
+    },
   });
+
+  const productData = data?.map((product) => ({
+    id: product.id,
+    title: product.title,
+    price: product.variants.edges[0].node.price,
+  }));
+
+  const resourceName = {
+    singular: "product",
+    plural: "products",
+  };
+
+  const rowMarkup = productData?.map(({ id, title, price }, index) => (
+    <IndexTable.Row id={id} key={id} position={index}>
+      <IndexTable.Cell>
+        <Text variant="bodyMd" fontWeight="bold" as="span">
+          {title}
+        </Text>
+      </IndexTable.Cell>
+      <IndexTable.Cell>£{price}</IndexTable.Cell>
+    </IndexTable.Row>
+  ));
 
   if (error) {
     return (
@@ -40,7 +64,7 @@ const ShopPage = () => {
     );
   }
 
-  if (fetching || fetchingGadgetMeta) {
+  if (fetching) {
     return (
       <div
         style={{
@@ -60,83 +84,16 @@ const ShopPage = () => {
     <Page title="App">
       <Layout>
         <Layout.Section>
-          <Banner
-            title={`${metaData.gadgetMeta.slug} is successfully connected to Shopify!!!`}
-            status="success"
-          />
-        </Layout.Section>
-        <Layout.Section>
-          <AlphaCard>
-            <div style={{ width: "100%" }}>
-              <img
-                src="https://assets.gadget.dev/assets/icon.svg"
-                style={{
-                  margin: "14px auto",
-                  height: "56px",
-                }}
-              />
-            </div>
-            <VerticalStack gap="2">
-              <Text variant="headingLg" as="h1" alignment="center">
-                This page is powered by{" "}
-                <Link
-                  url={`${metaData.gadgetMeta.editURL}/files/frontend/ShopPage.jsx`}
-                  external
-                >
-                  <code
-                    style={{
-                      fontFamily:
-                        "SFMono-Regular, Consolas, Liberation Mono, Menlo, Courier, monospace",
-                      fontSize: "0.95em",
-                    }}
-                  >
-                    ShopPage.jsx
-                  </code>
-                </Link>
-              </Text>
-              <Text variant="bodyMd" as="p" alignment="center">
-                Start building your UI by editing file hosted on Gadget.
-              </Text>
-            </VerticalStack>
-          </AlphaCard>
-        </Layout.Section>
-        <Layout.Section>
-          <AlphaCard>
-            <VerticalStack gap="4">
-              <Text variant="headingMd" as="h6">
-                Example Shop Query from your Gadget Database
-              </Text>
-              <div
-                style={{
-                  border: "1px solid #e1e3e5",
-                  padding: "12px",
-                  borderRadius: "0.25rem",
-                }}
-              >
-                <HorizontalStack align="space-between" blockAlign="center">
-                  <HorizontalStack gap="4" blockAlign="center">
-                    <Icon source={StoreMajor} color="highlight" backdrop />
-                    <div>
-                      <Text variant="headingMd" as="h6">
-                        {data.name}
-                      </Text>
-                      <Text variant="bodyMd" as="p">
-                        {data.city}, {data.countryName}
-                      </Text>
-                    </div>
-                  </HorizontalStack>
-                  <Text variant="bodyMd" as="p">
-                    Created at:{" "}
-                    {data.shopifyCreatedAt.toLocaleDateString("en-GB", {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                    })}
-                  </Text>
-                </HorizontalStack>
-              </div>
-            </VerticalStack>
-          </AlphaCard>
+          {/* <code>{JSON.stringify(productData[0], null, 2)}</code> */}
+          <LegacyCard>
+            <IndexTable
+              resourceName={resourceName}
+              itemCount={productData.length}
+              headings={[{ title: "Title" }, { title: "Price" }]}
+            >
+              {rowMarkup}
+            </IndexTable>
+          </LegacyCard>
         </Layout.Section>
         <Layout.Section>
           <FooterHelp>
