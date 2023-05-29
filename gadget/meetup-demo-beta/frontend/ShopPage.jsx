@@ -26,18 +26,27 @@ const ShopPage = () => {
           node: {
             id: true,
             price: true,
+            lowestPrice: true,
+            lowestPriceUpdatedAt: true,
           },
         },
       },
     },
   });
 
-  const productData = data?.map((product) => ({
-    id: product.id,
-    title: product.title,
-    price: product.variants.edges[0].node.price,
-    updatedAt: new Date(product.updatedAt).toLocaleString(),
-  }));
+  const productData = data?.map((product) => {
+    const firstVariant = product.variants.edges[0].node;
+    return {
+      id: product.id,
+      title: product.title,
+      price: firstVariant.price,
+      lowestPrice: firstVariant.lowestPrice,
+      lowestPriceUpdatedAt:
+        firstVariant.lowestPriceUpdatedAt &&
+        new Date(firstVariant.lowestPriceUpdatedAt).toLocaleString(),
+      updatedAt: new Date(product.updatedAt).toLocaleString(),
+    };
+  });
 
   const resourceName = {
     singular: "product",
@@ -45,7 +54,10 @@ const ShopPage = () => {
   };
 
   const rowMarkup = productData?.map(
-    ({ id, title, price, updatedAt }, index) => (
+    (
+      { id, title, price, updatedAt, lowestPrice, lowestPriceUpdatedAt },
+      index
+    ) => (
       <IndexTable.Row id={id} key={id} position={index}>
         <IndexTable.Cell>
           <Text variant="bodyMd" fontWeight="bold" as="span">
@@ -53,6 +65,8 @@ const ShopPage = () => {
           </Text>
         </IndexTable.Cell>
         <IndexTable.Cell>£{price}</IndexTable.Cell>
+        <IndexTable.Cell>{lowestPrice}</IndexTable.Cell>
+        <IndexTable.Cell>{lowestPriceUpdatedAt}</IndexTable.Cell>
         <IndexTable.Cell>{updatedAt}</IndexTable.Cell>
       </IndexTable.Row>
     )
@@ -96,6 +110,8 @@ const ShopPage = () => {
               headings={[
                 { title: "Title" },
                 { title: "Price" },
+                { title: "Lowest Price" },
+                { title: "LP Updated At" },
                 { title: "Updated At" },
               ]}
             >
