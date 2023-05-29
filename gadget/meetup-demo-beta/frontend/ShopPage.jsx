@@ -1,16 +1,15 @@
-import { useFindMany, useQuery } from "@gadgetinc/react";
+import { useFindMany } from "@gadgetinc/react";
 import {
-  Banner,
+  Button,
   FooterHelp,
+  IndexTable,
   Layout,
   LegacyCard,
+  LegacyStack,
   Link,
   Page,
-  IndexTable,
   Spinner,
   Text,
-  LegacyStack,
-  Badge,
 } from "@shopify/polaris";
 import { api } from "./api";
 
@@ -40,7 +39,7 @@ const ShopPage = () => {
       id: product.id,
       title: product.title,
       price: firstVariant.price,
-      lowestPrice: firstVariant.lowestPrice,
+      lowestPrice: firstVariant.lowestPrice && `£${firstVariant.lowestPrice}`,
       lowestPriceUpdatedAt:
         firstVariant.lowestPriceUpdatedAt &&
         new Date(firstVariant.lowestPriceUpdatedAt).toLocaleString(),
@@ -118,6 +117,19 @@ const ShopPage = () => {
               {rowMarkup}
             </IndexTable>
           </LegacyCard>
+          <br />
+          <LegacyStack>
+            <LegacyStack.Item fill></LegacyStack.Item>
+            <LegacyStack.Item>
+              <Button
+                onClick={() => {
+                  refresh();
+                }}
+              >
+                Reload
+              </Button>
+            </LegacyStack.Item>
+          </LegacyStack>
         </Layout.Section>
         <Layout.Section>
           <FooterHelp>
