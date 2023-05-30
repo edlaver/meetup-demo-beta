@@ -11,6 +11,7 @@ import {
   Text,
   LegacyStack,
   Badge,
+  Button,
 } from "@shopify/polaris";
 import { api } from "./api";
 
@@ -88,8 +89,8 @@ const ShopPage = () => {
     <Page title="App">
       <Layout>
         <Layout.Section>
-          <code>{JSON.stringify(productData[0], null, 2)}</code>
-          {/* <LegacyCard>
+          {/* <code>{JSON.stringify(productData[0], null, 2)}</code> */}
+          <LegacyCard>
             <IndexTable
               resourceName={resourceName}
               itemCount={productData.length}
@@ -101,7 +102,20 @@ const ShopPage = () => {
             >
               {rowMarkup}
             </IndexTable>
-          </LegacyCard> */}
+          </LegacyCard>
+          <br />
+          <LegacyStack>
+            <LegacyStack.Item fill></LegacyStack.Item>
+            <LegacyStack.Item>
+              <Button
+                onClick={() => {
+                  refresh();
+                }}
+              >
+                Reload
+              </Button>
+            </LegacyStack.Item>
+          </LegacyStack>
         </Layout.Section>
         <Layout.Section>
           <FooterHelp>
